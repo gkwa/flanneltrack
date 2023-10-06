@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  networkx:
+    build: .
+    image: taylorm/flanneltrack
+    working_dir: /tmp
+    entrypoint:
+    - bash
+    - -x
+    - -c
+    - |
+      python main.py
+    volumes:
+    - .:/tmp
