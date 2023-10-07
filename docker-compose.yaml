@@ -11,5 +11,6 @@ services:
     - -c
     - |
       python main.py
+      cat test.dot | dot -Tpng >out.png
     volumes:
     - .:/tmp

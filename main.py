@@ -17,9 +17,9 @@ DG = networkx.DiGraph()
 
 DG.add_node("northflier ec2 instance", header=True)
 DG.add_node("northflier iam instance profile", header=True)
-DG.add_node("northflier iam policy", header=True)
+DG.add_node("iam policy", header=True)
 
-DG.add_edge("upload logs", "northflier iam policy")
+DG.add_edge("upload logs", "iam policy")
 
 DG.add_node("terraform scripts", header=True)
 
@@ -27,7 +27,7 @@ DG.add_node("s3 bucket", aws_resource=True)
 DG.add_edge("upload logs", "s3 bucket")
 
 DG.add_edge("upload installer", "s3 bucket")
-DG.add_edge("upload installer", "northflier iam policy")
+DG.add_edge("upload installer", "iam policy")
 
 DG.add_edge("northflier iam instance profile", "terraform scripts")
 
@@ -64,13 +64,12 @@ DG.add_edge("upload logs", "gather_logs.sh.j2")
 DG.add_node("test installer", header=True)
 DG.add_edge("test installer", "containers_test.sh.j2")
 DG.add_edge("test installer", "cloudelf.sh.j2")
-DG.add_edge("test installer", "dns.sh.j2")
 
 DG.add_node("installer readme", header=True)
 
 DG.add_edge("installer readme", "install docker")
 
-DG.add_edge("dev iteration", "fix dns")
+DG.add_edge("cloudelf.sh.j2", "fix dns")
 DG.add_edge("installer readme", "install docker")
 
 DG.add_edge("dev iteration", "test installer")
@@ -88,12 +87,14 @@ DG.add_edge("build lightserver installer", "lightserver_git_repo_clone.sh.j2")
 
 DG.add_edge("lightserver_git_repo_clone.sh.j2", "install secrets")
 
-DG.add_edge("install secrets", "northflier iam policy")
+DG.add_edge("install secrets", "iam policy")
 
 DG.add_node("containers_test.sh.j2")
 DG.add_edge("containers_test.sh.j2", "ansible.sh.j2")
 DG.add_edge("containers_test.sh.j2", "lxc.sh.j2")
 DG.add_edge("containers_test.sh.j2", "cakepalm.sh.j2")
+
+DG.add_edge("cloudelf.sh.j2", "dns.sh.j2")
 
 DG.add_node("customize_env.sh.j2")
 DG.add_edge("customize_env.sh.j2", "ansible.sh.j2")
@@ -205,7 +206,6 @@ def nodes_outgoing(G):
         if ".sh.j2" in item:
             print(item)
 
-
 print("")
 print("leaf_nodes")
 leaf_nodes(DG)
@@ -213,6 +213,12 @@ leaf_nodes(DG)
 print("")
 print("nodes_outgoing")
 nodes_outgoing(DG)
+
+print("start remove node")
+# DG.remove_node("build lightserver installer")
+# DG.remove_node("test installer")
+networkx.nx_agraph.write_dot(DG, "test.dot")
+print("end remove node")
 
 # print("")
 # dostuff3(DG)
